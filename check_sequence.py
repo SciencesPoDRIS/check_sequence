@@ -18,9 +18,11 @@ log_level = logging.DEBUG
 # Programm
 #
 def check(path) :
+	global flag
 	logging.info('Check path : ' + path)
 	ranks = {}
 	lasts = {}
+	names = {}
 	# Iterate over each folder and file from path
 	for file in os.listdir(path) :
 		complete_path = os.path.join(path, file)
@@ -34,6 +36,8 @@ def check(path) :
 					ranks[extension] = []
 				if not extension in lasts.keys() :
 					lasts[extension] = -1
+				if not extension in names :
+					names[extension] = '_'.join(splitted_file[:4]) + '_RANK_' + splitted_file[-1]
 				ranks[extension].append(rank)
 				lasts[extension] = rank
 		# If it's a folder, let's iterate
@@ -41,22 +45,26 @@ def check(path) :
 			check(complete_path)
 	for item in ranks.keys() :
 		if lasts[item] != -1 :
-			result = compare(ranks[item], lasts[item])
-			if len(result) == 0 :
-				print 'All the files are present'
-			else :
-				print 'Files are missing'
+			results = compare(ranks[item], lasts[item], item)
+			if len(results) != 0 :
+				flag = 0
+				print 'These files are missing :'
+				for result in results :
+					print names[item].replace('RANK', str(result).zfill(6))
 
-def compare(array_01, last_item) :
-	array_02 = range(1, last_item + 1)
-	return [aa for aa in array_01 if aa not in array_02]
+# Check if the elements of sequence are not in array
+def compare(array, last_index, item) :
+	first_index = 3 if item == 'xml' else 1
+	sequence = range(first_index, last_index + 1)
+	return [s for s in sequence if s not in array]
 
 #
 # Main
 #
 if __name__ == '__main__':
-	# Check that the command line has at least 2 arguments
-	if len(sys.argv) < 2 :
+	flag = 1
+	# Check that the command line has exactly 2 arguments
+	if len(sys.argv) != 2 :
 		print ''
 		print 'Arguments error'
 		print 'Correct usage : ' + sys.argv[0] + ' "path/to/folder/to/check"'
@@ -70,3 +78,5 @@ if __name__ == '__main__':
 		logging.basicConfig(filename = log_file, filemode = 'w', format = '%(asctime)s  |  %(levelname)s  |  %(message)s', datefmt = '%m/%d/%Y %I:%M:%S %p', level = log_level)
 		logging.info('Start')
 		check(check_path)
+		if flag :
+			print 'Everything worked well. Your folder is sooooo perfect !'
