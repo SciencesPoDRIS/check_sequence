@@ -5,17 +5,20 @@
 #
 # Libs
 #
-import logging, os, sys
+import logging
+import os
+import sys
 
 #
 # Config
 #
 # Linux style
-# path_separator = '/'
+path_separator = '/'
 # Windows style
-path_separator = '\\'
+# path_separator = '\\'
 log_folder = 'log'
 log_level = logging.DEBUG
+
 
 #
 # Programm
@@ -33,7 +36,12 @@ def check(path) :
 		if os.path.isfile(complete_path) :
 			splitted_file = complete_path.split(path_separator)[-1].split('_')
 			if len(splitted_file) >= 4 :
-				rank = int(splitted_file[4].split('.')[0])
+				try :
+					rank = int(splitted_file[4].split('.')[0])
+				except ValueError as e :
+					logging.error('Error : could not convert data to an integer. The rank is not correctly setted.')
+					print 'Error : could not convert data to an integer. The rank is not correctly setted.'
+					sys.exit()
 				extension = splitted_file[-1].split('.')[-1]
 				if not extension in ranks.keys() :
 					ranks[extension] = []
