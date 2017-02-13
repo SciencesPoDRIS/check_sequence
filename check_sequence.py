@@ -13,12 +13,12 @@ import sys
 # Config
 #
 # Linux style
-path_separator = '/'
+# path_separator = '/'
 # Windows style
-# path_separator = '\\'
+path_separator = '\\'
 log_folder = 'log'
 log_level = logging.DEBUG
-
+rank_file_pattern = 4
 
 #
 # Programm
@@ -35,9 +35,9 @@ def check(path) :
 		# If it is a file
 		if os.path.isfile(complete_path) :
 			splitted_file = complete_path.split(path_separator)[-1].split('_')
-			if len(splitted_file) >= 4 :
+			if len(splitted_file) >= rank_file_pattern :
 				try :
-					rank = int(splitted_file[4].split('.')[0])
+					rank = int(splitted_file[rank_file_pattern].split('.')[0])
 				except ValueError as e :
 					logging.error('Error : could not convert data to an integer. The rank is not correctly setted.')
 					print 'Error : could not convert data to an integer. The rank is not correctly setted.'
@@ -48,7 +48,8 @@ def check(path) :
 				if not extension in lasts.keys() :
 					lasts[extension] = -1
 				if not extension in names :
-					names[extension] = '_'.join(splitted_file[:5]) + '_RANK_' + splitted_file[-1]
+					tmp = rank_file_pattern + 1
+					names[extension] = '_'.join(splitted_file[:tmp]) + '_RANK_' + splitted_file[-1]
 				ranks[extension].append(rank)
 				lasts[extension] = rank
 		# If it's a folder, let's iterate
@@ -90,4 +91,5 @@ if __name__ == '__main__':
 		logging.info('Start')
 		check(check_path)
 		if flag :
+			logging.info('Everything worked well. Your folder is sooooo perfect !')
 			print 'Everything worked well. Your folder is sooooo perfect !'
