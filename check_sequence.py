@@ -18,6 +18,8 @@ import sys
 path_separator = '\\'
 log_folder = 'log'
 log_level = logging.DEBUG
+file_separator = '_'
+# Rank number in file pattern, couting starts with 0. Check the file_separator above.
 rank_file_pattern = 4
 
 #
@@ -34,7 +36,7 @@ def check(path) :
 		complete_path = os.path.join(path, file)
 		# If it is a file
 		if os.path.isfile(complete_path) :
-			splitted_file = complete_path.split(path_separator)[-1].split('_')
+			splitted_file = complete_path.split(path_separator)[-1].split(file_separator)
 			if len(splitted_file) >= rank_file_pattern :
 				try :
 					rank = int(splitted_file[rank_file_pattern].split('.')[0])
@@ -49,7 +51,7 @@ def check(path) :
 					lasts[extension] = -1
 				if not extension in names :
 					tmp = rank_file_pattern + 1
-					names[extension] = '_'.join(splitted_file[:tmp]) + '_RANK_' + splitted_file[-1]
+					names[extension] = file_separator.join(splitted_file[:tmp]) + file_separator + 'RANK' + file_separator + splitted_file[-1]
 				ranks[extension].append(rank)
 				lasts[extension] = rank
 		# If it's a folder, let's iterate
