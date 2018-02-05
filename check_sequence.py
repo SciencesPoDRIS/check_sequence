@@ -5,7 +5,9 @@
 #
 # Libs
 #
-import logging, os, sys
+import logging
+import os
+import sys
 
 #
 # Config
@@ -16,6 +18,9 @@ import logging, os, sys
 path_separator = '\\'
 log_folder = 'log'
 log_level = logging.DEBUG
+file_separator = '_'
+# Rank number in file pattern, couting starts with 0. Check the file_separator above.
+rank_file_pattern = 4
 
 #
 # Programm
@@ -31,18 +36,22 @@ def check(path) :
 		complete_path = os.path.join(path, file)
 		# If it is a file
 		if os.path.isfile(complete_path) :
-			splitted_file = complete_path.split(path_separator)[-1].split('_')
-			if len(splitted_file) >= 4 :
-				# rank = int(splitted_file[4])
-				rank = int(splitted_file[3].split('.')[0])
+			splitted_file = complete_path.split(path_separator)[-1].split(file_separator)
+			if len(splitted_file) >= rank_file_pattern :
+				try :
+					rank = int(splitted_file[rank_file_pattern].split('.')[0])
+				except ValueError as e :
+					logging.error('Error : could not convert data to an integer. The rank is not correctly setted.')
+					print 'Error : could not convert data to an integer. The rank is not correctly setted.'
+					sys.exit()
 				extension = splitted_file[-1].split('.')[-1]
 				if not extension in ranks.keys() :
 					ranks[extension] = []
 				if not extension in lasts.keys() :
 					lasts[extension] = -1
 				if not extension in names :
-					# names[extension] = '_'.join(splitted_file[:4]).replace('color', 'master') + '_RANK_' + splitted_file[-1]
-					names[extension] = '_'.join(splitted_file[:4]) + '_RANK_' + splitted_file[-1]
+					tmp = rank_file_pattern + 1
+					names[extension] = file_separator.join(splitted_file[:tmp]) + file_separator + 'RANK' + file_separator + splitted_file[-1]
 				ranks[extension].append(rank)
 				lasts[extension] = rank
 		# If it's a folder, let's iterate
@@ -84,4 +93,5 @@ if __name__ == '__main__':
 		logging.info('Start')
 		check(check_path)
 		if flag :
+			logging.info('Everything worked well. Your folder is sooooo perfect !')
 			print 'Everything worked well. Your folder is sooooo perfect !'
