@@ -11,9 +11,9 @@ import logging, os, sys
 # Config
 #
 # Linux style
-path_separator = '/'
+# path_separator = '/'
 # Windows style
-# path_separator = '\\'
+path_separator = '\\'
 log_folder = 'log'
 log_level = logging.DEBUG
 
@@ -33,14 +33,16 @@ def check(path) :
 		if os.path.isfile(complete_path) :
 			splitted_file = complete_path.split(path_separator)[-1].split('_')
 			if len(splitted_file) >= 4 :
-				rank = int(splitted_file[4])
+				# rank = int(splitted_file[4])
+				rank = int(splitted_file[3].split('.')[0])
 				extension = splitted_file[-1].split('.')[-1]
 				if not extension in ranks.keys() :
 					ranks[extension] = []
 				if not extension in lasts.keys() :
 					lasts[extension] = -1
 				if not extension in names :
-					names[extension] = '_'.join(splitted_file[:4]).replace('color', 'master') + '_RANK_' + splitted_file[-1]
+					# names[extension] = '_'.join(splitted_file[:4]).replace('color', 'master') + '_RANK_' + splitted_file[-1]
+					names[extension] = '_'.join(splitted_file[:4]) + '_RANK_' + splitted_file[-1]
 				ranks[extension].append(rank)
 				lasts[extension] = rank
 		# If it's a folder, let's iterate
